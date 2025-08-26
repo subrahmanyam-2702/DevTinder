@@ -1,32 +1,37 @@
 const express=require("express");
 const app=express();
-const {adminAuth,userAuth}=require("./Middlewares/auth")
+const connectDB=require("./config/database");
+const User=require("./models/user");
 
-
-//app.use("/admin",adminAuth);
-
-//app.use("/user",userAuth);
-
-app.get("/user/data",userAuth,(req,res)=>
+app.post("/signup",async (req,res)=>
 {
-    res.send("User was authorized");
+   const user=new User({
+       firstName:"Sahiti",
+       lastName:"Pepakayala",
+       emailId:"sahiti@gmail.com",
+       password:"sahiti149"
+   });
+   try{
+        await user.save();
+        res.send("New data was added successfully");  
+   }
+   catch(err)
+   {
+      res.status(400).send(err.message);
+   }
+  
 })
 
-app.post("/user/login",(req,res)=>
+connectDB()
+.then(()=>
 {
-    res.send("user was loggedin");
+    console.log("Database is connected successfully");
+    app.listen(7777,()=>
+{
+    console.log(`Connect to the post ${7777}`);
+});
 })
-
-app.get("/admin/deleteAllData",adminAuth,(req,res,next)=>
+.catch(()=>
 {
-    res.send("All Data was Deleted");
-});
-app.get("/admin/getAllData",adminAuth,(req,res)=>
-{
-       res.send("All data about the admin was gathered");
-});
-
-app.listen(8080,()=>
-{
-    console.log("This is node by the akshay");
+    console.error("Database is not connected");
 });

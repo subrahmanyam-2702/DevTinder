@@ -1,0 +1,2 @@
+url=
+mongodb+srv://Subbu:Subbu2702@cluster0.bbkihai.mongodb.net/DevTinder?retryWrites=true&w=majority&appName=Cluster0
