@@ -1,2 +1,136 @@
 url=
 mongodb+srv://Subbu:Subbu2702@cluster0.bbkihai.mongodb.net/DevTinder?retryWrites=true&w=majority&appName=Cluster0
+
+
+
+app.get("/user",async (req,res)=>
+{
+    const email=req.body.emailId;
+    try{
+        const user=await User.find({emailId:email});
+        if(!user)
+        {
+            res.status(400).send("Something went wrong");
+        }
+        else{
+            res.send(user);
+        }
+    }
+    catch(err)
+    {
+        res.status(400).send("Something went wrong");
+    }
+})
+
+app.get("/feed",async (req,res)=>
+{
+    
+    try{
+        const users=await User.find({});
+        if(!users)
+        {
+            res.status(400).send("Something Went wrong");
+        }
+        else
+        {
+            res.send(users);
+        }
+    }
+    catch(err)
+    {
+        res.status(400).send("Something Went wrong");
+    }
+})
+
+app.get("/oneuser",async (req,res)=>
+{
+    try{
+         const user=await User.findById({_id:'68ad61424c671f76575cdde9'}); 
+        if(!user)
+        {
+            res.status(400).send("Something Went wrong");
+          }
+          else{
+            res.send(user);
+          }
+    }
+    catch(err)
+    {
+        res.status(400).send("Something Went wrong");
+    }
+})
+
+app.delete("/user",async (req,res)=>
+{
+    const id=req.body.id;
+    try{
+         const user=await User.findByIdAndDelete(id); 
+        if(!user)
+        {
+            res.status(400).send("Something Went wrong");
+          }
+          else{
+            res.send(user);
+          }
+    }
+    catch(err)
+    {
+        res.status(400).send("Something Went wrong");
+    }
+})
+
+app.patch("/user",async (req,res)=>
+{
+    const id=req.body.id;
+    const data=req.body;
+    try{
+        const user=await User.findByIdAndUpdate(id,data,{returnDocument:"after",runValidators:true}); 
+        if(!user)
+        {
+            res.status(400).send("Something Went wrong");
+          }
+          else{
+            res.send(user);
+          }
+    }
+    catch(err)
+    {
+        res.status(400).send("Something Went wrong");
+    }
+})
+
+app.patch("/user/:id",async (req,res)=>
+{
+    const id=req.params?.id;
+    const data=req.body;
+    if (!data || Object.keys(data).length === 0) {
+        return res.status(400).send("No data provided for update");
+    }
+    try{
+
+        const allowedUpdates=["firstName","age","photourl","about","gender","skills"];
+        const isAllowed = Object.keys(data).every(k => allowedUpdates.includes(k));
+        let skilllength=0;
+        if(data.skills)
+        {
+            skilllength=data.skills.length;
+        }
+        if(!isAllowed)
+        {
+            throw new Error("Updates are not allowed");
+        }
+         if(skilllength>10)
+        {
+            throw new Error("Skill are too more");
+        }
+        const user=await User.findByIdAndUpdate(id,data,{new: true,runValidators:true}); 
+          if (!user) {
+            return res.status(404).send("User not found");
+        }
+        res.send(user);
+    }
+    catch(err)
+    {
+        res.status(400).send("Update failed "+err.message);
+    }
+})

@@ -1,26 +1,16 @@
 const express=require("express");
 const app=express();
 const connectDB=require("./config/database");
-const User=require("./models/user");
+const cookieparser=require("cookie-parser");
+app.use(express.json());
+app.use(cookieparser());
+const authRouter=require("./routes/auth");
+const profileRouter=require("./routes/profile");
+const requestRouter=require("./routes/request");
 
-app.post("/signup",async (req,res)=>
-{
-   const user=new User({
-       firstName:"Sahiti",
-       lastName:"Pepakayala",
-       emailId:"sahiti@gmail.com",
-       password:"sahiti149"
-   });
-   try{
-        await user.save();
-        res.send("New data was added successfully");  
-   }
-   catch(err)
-   {
-      res.status(400).send(err.message);
-   }
-  
-})
+app.use("/",authRouter);
+app.use("/",profileRouter);
+app.use("/",requestRouter);
 
 connectDB()
 .then(()=>
