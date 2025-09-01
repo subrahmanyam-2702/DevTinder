@@ -11,8 +11,6 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth,async (req,res)=>
           const toUserId=req.params.toUserId;
           const status=req.params.status;
           const allowedStatus=["interested","ignored"];
-          console.log(fromUserId);
-          console.log(toUserId);
           if(!allowedStatus.includes(status))
           {
                return res.status(400).json({message:"Invalid status"});
@@ -61,9 +59,51 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth,async (req,res)=>
     }
 })
 
+requestRouter.post("/request/review/:status/:requestId",userAuth,async (req,res)=>{
+
+   try{
+        const allowedStatus=["accepted","rejected"];
+        const status=req.params.status;
+        const reqId=req.params.requestId;
+        const loggedInUserId=req.user._id;
+        if(!allowedStatus.includes(status))
+        {
+          return res.status(400).json({
+            message:"Invalid status",
+          });
+        }
+        /*const isvalidRequest=await ConnectionRequest.findOne({_id:reqId});
+        if(!isvalidRequest)
+        {
+          return res.status(400).json({
+            message:"Invalid id!!!"
+          })
+        }*/
+        const connectionRequest=await ConnectionRequest.findOne({
+           _id:reqId,
+           toUserId:loggedInUserId,
+           status:"interested"
+        });
+        if(!connectionRequest)
+        {
+          return res.status(400).json({
+            message:"Invalid request"
+          })
+        }
+        connectionRequest.status=status;
+        const data=await connectionRequest.save();
+        res.json({
+          message:"Connection request is "+status,
+          data
+        })
+   }
+   catch(err)
+   {
+    res.status(400).send("Error : "+err.message);
+   }
+})
 
 module.exports=requestRouter;
-
 
 
 
