@@ -5,7 +5,7 @@ const userRouter=express.Router();
 const User=require("../models/user");
 
 
-const USER_SAFE_DATA="firstName lastName photourl about skills";
+const USER_SAFE_DATA="firstName lastName photourl about skills gender age";
 
 userRouter.get("/user/requests/received",userAuth,async (req,res)=>
 {
@@ -16,15 +16,17 @@ userRouter.get("/user/requests/received",userAuth,async (req,res)=>
              status:"interested"
           }).populate("fromUserId",USER_SAFE_DATA);
         //   .populate("fromUserId",["firstName","lastName"]);
+         
           if(!connectRequests)
           {
              return res.status(400).json({
                     message:"No Connection requests exist"
                 });
           }
+          console.log(connectRequests);
           res.json({
             message:"Data fetched successfully",
-            connectRequests
+            data:connectRequests
           })
 
     }catch(err)
@@ -68,7 +70,7 @@ userRouter.get("/user/feed",userAuth,async (req,res)=>
        const loggedInUser=req.user;
 
        const page=parseInt(req.query.page) || 1;
-       const limit=parseInt(req.query.limit) || 10;
+       let limit=parseInt(req.query.limit) || 10;
        const skip=(page-1)*limit;
        limit=limit>50 ? 50:limit;
 

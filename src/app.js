@@ -9,15 +9,21 @@ const profileRouter=require("./routes/profile");
 const requestRouter=require("./routes/request");
 const userRouter = require("./routes/user");
 const cors=require("cors");
+require("dotenv").config()
+
 
 app.use(cors({
-    origin:"http://localhost:5173/",
-    credentials:true
+    origin: ["http://localhost:5173", process.env.FRONTEND_URL],
+    credentials: true,
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"]
 }));
+
 app.use("/",authRouter);
 app.use("/",profileRouter);
 app.use("/",requestRouter);
 app.use("/",userRouter);
+
+const PORT = process.env.PORT || 7777
 
 connectDB()
 .then(()=>
@@ -32,3 +38,4 @@ connectDB()
 {
     console.error("Database is not connected");
 });
+

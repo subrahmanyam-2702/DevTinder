@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
+require("dotenv").config()
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://Subbu:Subbu2702@cluster0.bbkihai.mongodb.net/DevTinder?retryWrites=true&w=majority"
+    const conn = await mongoose.connect(
+      process.env.MONGO_URI || "localhost:27017/DEVTINDER"
     );
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error);
-    process.exit(1); // stop app if DB connection fails
+    console.error("❌ MongoDB connection error:", error.message);
+    process.exit(1);
   }
 };
 
